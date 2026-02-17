@@ -1,0 +1,48 @@
+
+
+import random
+
+
+class Question:
+    def __init__(self, question, answer, options):
+        self.question = question
+        self.answer = answer
+        self.options = options
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.score = 0
+
+
+class Game:
+
+    def __init__(self, questions, players):
+        self.questions = questions
+        self.players = players
+
+    def play(self):
+        first_player = random.randint(0,1)
+        current_player = first_player
+
+        while self.questions:
+            question = random.choice(self.questions)
+            self.questions.remove(question)
+            print(f"{self.players[current_player].name}, it's your turn!")
+            print(question.question)
+            for i, j in enumerate(question.options):
+                print(f"{i + 1}. {j}")
+            answer = int(input("Your answer (1-4): "))
+            if answer == question.answer:
+                print("Correct!")
+                self.players[current_player].score += 1
+            else:
+                print("Wrong!")
+            if current_player == 0:
+                current_player = 1
+            else:
+                current_player = 0
+
+
+        
+        
