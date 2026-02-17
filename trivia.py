@@ -1,5 +1,5 @@
 
-
+import json
 import random
 
 
@@ -48,6 +48,21 @@ class Game:
            
 
             current_player = (current_player + 1) % len(self.players)
+
+def shuffle (question_dict):
+    correct = question_dict['options'][question_dict['answer'] - 1]
+    opts = question_dict['options'].copy()
+    random.shuffle(opts)
+    new_ans = opts.index(correct) + 1
+    return Question(question_dict['question'], new_ans, opts)
+
+def read_json(file):
+    with open (file, 'r') as f:
+        data = json.load(f)
+    questions = []
+    for i in data:
+        questions.append(shuffle(i))
+    return questions
 
 
         
