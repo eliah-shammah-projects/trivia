@@ -22,7 +22,7 @@ class Game:
         self.players = players
 
     def play(self):
-        first_player = random.randint(0,1)
+        first_player = random.randrange(len(self.players))
         current_player = first_player
         new = True
 
@@ -47,10 +47,7 @@ class Game:
             print(f"The correct answer was: {question.answer}")
            
 
-            if current_player == 0:
-                current_player = 1
-            else:
-                current_player = 0
+            current_player = (current_player + 1) % len(self.players)
 
 
         
