@@ -24,10 +24,14 @@ class Game:
     def play(self):
         first_player = random.randint(0,1)
         current_player = first_player
+        new = True
 
         while self.questions:
-            question = random.choice(self.questions)
-            self.questions.remove(question)
+            if new:
+              question = random.choice(self.questions)
+              self.questions.remove(question)
+
+
             print(f"{self.players[current_player].name}, it's your turn!")
             print(question.question)
             for i, j in enumerate(question.options):
@@ -36,10 +40,13 @@ class Game:
             if answer == question.answer:
                 print("Correct!")
                 self.players[current_player].score += 1
+                new = True
             else:
                 print("Wrong!")
+                new = False
             print(f"The correct answer was: {question.answer}")
-            
+           
+
             if current_player == 0:
                 current_player = 1
             else:
