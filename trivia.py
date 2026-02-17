@@ -8,6 +8,12 @@ class Question:
         self.question = question
         self.answer = answer
         self.options = options
+        self.shuffle_answers()
+    
+    def shuffle_answers(self):
+        correct_text = self.options[self.answer - 1]
+        random.shuffle(self.options)
+        self.answer = self.options.index(correct_text) + 1
 
 class Player:
     def __init__(self, name):
@@ -44,24 +50,25 @@ class Game:
             else:
                 print("Wrong!")
                 new = False
-            print(f"The correct answer was: {question.answer}")
+            print(f"The correct answer was: {question.options[question.answer - 1]}")
            
 
             current_player = (current_player + 1) % len(self.players)
 
-def shuffle (question_dict):
-    correct = question_dict['options'][question_dict['answer'] - 1]
-    opts = question_dict['options'].copy()
-    random.shuffle(opts)
-    new_ans = opts.index(correct) + 1
-    return Question(question_dict['question'], new_ans, opts)
+
 
 def read_json(file):
     with open (file, 'r') as f:
         data = json.load(f)
     questions = []
+
     for i in data:
-        questions.append(shuffle(i))
+        question = i['question']
+        answer = i['answer']
+        options = i['options']
+        
+        questions.append(Question(question, answer, options))
+    
     return questions
 
 
