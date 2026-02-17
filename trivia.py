@@ -38,6 +38,8 @@ class Game:
                 self.players[current_player].score += 1
             else:
                 print("Wrong!")
+            print(f"The correct answer was: {question.answer}")
+            
             if current_player == 0:
                 current_player = 1
             else:
