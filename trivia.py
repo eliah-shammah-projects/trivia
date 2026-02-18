@@ -43,7 +43,17 @@ class Game:
             print(question.question)
             for i, j in enumerate(question.options):
                 print(f"{i + 1}. {j}")
-            answer = int(input("Your answer (1-4): "))
+
+            while True:
+                try:
+                   answer = int(input("Your answer (1-4): "))
+                   if answer > 0 and answer < 5:
+                       break 
+                   else: 
+                       raise ValueError ("Invalid input. Please enter a number between 1 and 4.")
+                except ValueError:
+                    print("Invalid input. Please enter a *number* between 1 and 4.")
+            
             if answer == question.answer:
                 print("Correct!")
                 self.players[current_player].score += 1
@@ -70,15 +80,21 @@ class Game:
 
 
 def read_json(file):
-    with open (file, 'r') as f:
+    try:
+       with open (file, 'r') as f:
         data = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: The file '{file}' was not found.")
+        exit(1)
+    except json.JSONDecodeError:
+        print(f"Error: The file '{file}' is not a valid JSON file.")
+        exit(1) 
    
     questions = []
     for i in data:
         question = i['question']
         answer = i['answer']
         options = i['options']
-        
         questions.append(Question(question, answer, options))
     
     return questions
