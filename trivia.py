@@ -1,6 +1,7 @@
 
 import json
 import random
+import argparse
 
 
 class Question:
@@ -71,8 +72,8 @@ class Game:
 def read_json(file):
     with open (file, 'r') as f:
         data = json.load(f)
+   
     questions = []
-
     for i in data:
         question = i['question']
         answer = i['answer']
@@ -83,5 +84,28 @@ def read_json(file):
     return questions
 
 
-        
+def main():
+        parser = argparse.ArgumentParser(description="trivia game")
+        parser.add_argument('--file', required = True, help='the path of the json file with the questions')
+        parser.add_argument('--num_of_players', type = int, required = True,  help='the number of players')
+       
+        args = parser.parse_args()   
+
+        names_list = []
+        for i in range(args.num_of_players):
+           name = input(f"Enter the name of player {i + 1}: ")
+           names_list.append(name)
+           print (f"Welcome {name}!")
+
+        players = []
+        for name in names_list:
+            player = Player(name)
+            players.append(player)
+
+        questions = read_json(args.file)
+
+        game = Game(questions, players)
+        game.play()
+
+
         
