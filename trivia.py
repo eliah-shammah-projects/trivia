@@ -31,13 +31,13 @@ class Game:
         first_player = random.randrange(len(self.players))
         current_player = first_player
         new = True
+        rounds = (len(self.questions) // len(self.players)) * len(self.players)
 
-        while self.questions:
+
+        for i in range (rounds):
             if new:
               question = random.choice(self.questions)
               self.questions.remove(question)
-
-
             print(f"{self.players[current_player].name}, it's your turn!")
             print(question.question)
             for i, j in enumerate(question.options):
@@ -51,9 +51,20 @@ class Game:
                 print("Wrong!")
                 new = False
             print(f"The correct answer was: {question.options[question.answer - 1]}")
-           
-
             current_player = (current_player + 1) % len(self.players)
+        
+        maxi = max(p.score for p in self.players)
+        winners = []
+        for p in self.players:
+            print(f"{p.name} scored {p.score} points.")
+            if maxi == p.score:
+                winners.append(p.name)
+        if len(winners) == 1:
+            print(f"The winner is {winners[0]}!")
+        else:
+            print(f"The winners are {', '.join(winners)}!")
+                
+
 
 
 
