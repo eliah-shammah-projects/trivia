@@ -150,6 +150,11 @@ def main():
         parser.add_argument('--file', required = True, help='the path of the json file with the questions')
         parser.add_argument('--num_of_players', type = int, required = True,  help='the number of players')
         args = parser.parse_args()   
+        
+        if args.num_of_players < 2 or args.num_of_players > 10:
+            print("Error: The number of players must be between 2 and 10.")
+            exit(1)
+
 
         names_list = []
         for i in range(args.num_of_players):
