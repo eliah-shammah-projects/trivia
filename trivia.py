@@ -5,10 +5,11 @@ import argparse
 
 
 class Question:
-    def __init__(self, question, answer, options):
+    def __init__(self, question, answer, options, difficulty):
         self.question = question
         self.answer = answer
         self.options = options
+        self.difficulty = difficulty
         self.shuffle_answers()
     
     def shuffle_answers(self):
@@ -84,8 +85,7 @@ class Game:
         for i in winners:
             i.score = 0
         for i in range (3):
-            if len(winners) > len(self.flow_questions):
-               self.flow_questions = self.questions.copy()   
+            self.flow_questions = self.questions.copy()   
             first_player = random.randrange(len(winners))
             current_player = first_player
             new = True
@@ -149,7 +149,6 @@ def main():
         parser = argparse.ArgumentParser(description="trivia game")
         parser.add_argument('--file', required = True, help='the path of the json file with the questions')
         parser.add_argument('--num_of_players', type = int, required = True,  help='the number of players')
-       
         args = parser.parse_args()   
 
         names_list = []
