@@ -33,12 +33,12 @@ class Game:
         current_player = first_player
         new = True
         rounds = (len(self.questions) // len(self.players)) * len(self.players)
-
-
+        self.flow_questions = self.questions.copy()
+        
         for i in range (rounds):
             if new:
-              question = random.choice(self.questions)
-              self.questions.remove(question)
+              question = random.choice(self.flow_questions)
+              self.flow_questions.remove(question)
             print(f"{self.players[current_player].name}, it's your turn!")
             print(question.question)
             for i, j in enumerate(question.options):
@@ -64,6 +64,7 @@ class Game:
             print(f"The correct answer was: {question.options[question.answer - 1]}")
             current_player = (current_player + 1) % len(self.players)
         
+        
         maxi = max(p.score for p in self.players)
         winners = []
         for p in self.players:
@@ -74,10 +75,54 @@ class Game:
             print(f"The winner is {winners[0]}!")
         else:
             print(f"The winners are {', '.join(winners)}!")
-                
+            print("Starting tie-breaker round...")
+            winners = [p for p in self.players if p.name in winners]
+            self.tie_breaker(winners)
 
 
-
+    def tie_breaker(self, winners):
+        for i in winners:
+            i.score = 0
+        for i in range (3):
+            if len(winners) > len(self.flow_questions):
+               self.flow_questions = self.questions.copy()   
+            first_player = random.randrange(len(winners))
+            current_player = first_player
+            new = True
+            for p in range (len(winners)):  
+                if new:
+                    question = random.choice(self.flow_questions)
+                    self.flow_questions.remove(question)
+                print(f"{self.winners[current_player].name}, it's your turn!")
+                print(question.question)
+                for i, j in enumerate(question.options):
+                    print(f"{i + 1}. {j}")
+                while True:
+                    try:
+                        answer = int(input("Your answer (1-4): "))
+                        if answer > 0 and answer < 5:
+                          break 
+                        else: 
+                           raise ValueError ("Invalid input. Please enter a number between 1 and 4.")
+                    except ValueError:
+                         print("Invalid input. Please enter a *number* between 1 and 4.")
+                if answer == question.answer:
+                    print("Correct!")
+                    winners[current_player].score += 1
+                    new = True
+                else:
+                    print("Wrong!")
+                    new = False
+                print(f"The correct answer was: {question.options[question.answer - 1]}")
+                current_player = (current_player + 1) % len(winners)
+            max_score = max(p.score for p in winners)
+            winners = [p for p in winners if p.score == max_score]
+            if len(winners) == 1:
+                print(f"The winner is {winners[0].name}!")
+                break           
+            else:
+                print(f"The winners are {', '.join(p.name for p in winners)}! Starting tie-breaker round...")
+        print ("Game over!", "We dont have an alone winner!")
 
 def read_json(file):
     try:
