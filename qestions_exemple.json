@@ -73,5 +73,4 @@
   {"question": "Which country has the longest coastline?", "answer": 1, "options": ["Canada", "Australia", "USA", "Russia"], "difficulty": 2, "category": "geopolítica"},
   {"question": "What is the value of pi (π) approximately?", "answer": 2, "options": ["3", "3.14", "3.1416", "3.14159"], "difficulty": 1, "category": "matemática"},
   {"question": "Which planet is known for being the hottest?", "answer": 1, "options": ["Venus", "Mercury", "Mars", "Jupiter"], "difficulty": 2, "category": "astronomia"},
-  {"question": "In tennis, what is a score of zero called?", "answer": 2, "options": ["Nil", "Love", "Zero", "Ace"], "difficulty": 1, "category": "esportes"},
-  {"question": "Who was the first emperor of China?", "answer": 3, "options": ["Qin Shi Huang", "Han Wudi", "Kublai Khan
+  {"question": "In tennis, what is a score of zero called?", "answer": 2, "options": ["Nil", "Love", "Zero", "Ace"], "difficulty": 1, "category": "esportes"}]
