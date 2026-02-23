@@ -1,3 +1,5 @@
+# no futuro permitir mudanca de nivel durante o jogo 
+# no futuro aumentar nivel de perguntas 
 
 import json
 import random
@@ -33,16 +35,42 @@ class Game:
 
     def play(self):
 
+        print("Chose the difficulty level:")
+        print("1. 1\n2. 2\n3. 3\n4. 2-\n5. 2+\n6. All")
+        opcoes = {"1": 1, "2": 2, "3": 3, "4": "2-", "5": "2+", "6": "all"}
+        while True:
+            escolha = input("Enter the number of the desired difficulty: ").strip()
+            if escolha in opcoes:
+                nivel = opcoes[escolha]
+                if nivel == "all":
+                    perguntas_filtradas = self.questions.copy()
+                elif nivel == "2-":
+                    perguntas_filtradas = [q for q in self.questions if q.difficulty == 1 or q.difficulty == 2]
+                elif nivel == "2+":
+                    perguntas_filtradas = [q for q in self.questions if q.difficulty == 2 or q.difficulty == 3]
+                else:
+                    perguntas_filtradas = [q for q in self.questions if q.difficulty == nivel]
+                if not perguntas_filtradas:
+                    print("No questions available for this difficulty level.")
+                    continue
+                if len(perguntas_filtradas) < len(self.players):
+                    print("Not enough questions for the number of players. Choose another difficulty.")
+                    continue
+                break
+            else:
+                print("Invalid option. Please try again.")
+        
+
         first_player = random.randrange(len(self.players))
         current_player = first_player
         new = True
-        rounds = (len(self.questions) // len(self.players)) * len(self.players)
-        self.flow_questions = self.questions.copy()
-        
-        for i in range (rounds):
+        rounds = (len(perguntas_filtradas) // len(self.players)) * len(self.players)
+        self.flow_questions = perguntas_filtradas.copy()
+
+        for i in range(rounds):
             if new:
-              question = random.choice(self.flow_questions)
-              self.flow_questions.remove(question)
+                question = random.choice(self.flow_questions)
+                self.flow_questions.remove(question)
             print(f"{self.players[current_player].name}, it's your turn!")
             print(question.question)
             for i, j in enumerate(question.options):
@@ -50,14 +78,14 @@ class Game:
 
             while True:
                 try:
-                   answer = int(input("Your answer (1-4): "))
-                   if answer > 0 and answer < 5:
-                       break 
-                   else: 
-                       raise ValueError ("Invalid input. Please enter a number between 1 and 4.")
+                    answer = int(input("Your answer (1-4): "))
+                    if answer > 0 and answer < 5:
+                        break
+                    else:
+                        raise ValueError("Invalid input. Please enter a number between 1 and 4.")
                 except ValueError:
                     print("Invalid input. Please enter a *number* between 1 and 4.")
-            
+
             if answer == question.answer:
                 print("Correct!")
                 self.players[current_player].score += 1
@@ -67,8 +95,7 @@ class Game:
                 new = False
             print(f"The correct answer was: {question.options[question.answer - 1]}")
             current_player = (current_player + 1) % len(self.players)
-        
-        
+
         maxi = max(p.score for p in self.players)
         winners = []
         for p in self.players:
@@ -81,22 +108,22 @@ class Game:
             print(f"The winners are {', '.join(winners)}!")
             print("Starting tie-breaker round...")
             winners = [p for p in self.players if p.name in winners]
-            self.tie_breaker(winners)
+            self.tie_breaker(winners, perguntas_filtradas)
 
 
-    def tie_breaker(self, winners):
+    def tie_breaker(self, winners, perguntas_filtradas):
         for i in winners:
             i.score = 0
-        for i in range (3):
-            self.flow_questions = self.questions.copy()   
+        for i in range(3):
+            self.flow_questions = perguntas_filtradas.copy()
             first_player = random.randrange(len(winners))
             current_player = first_player
             new = True
-            for p in range (len(winners)):  
+            for p in range(len(winners)):
                 if new:
                     question = random.choice(self.flow_questions)
                     self.flow_questions.remove(question)
-                print(f"{self.winners[current_player].name}, it's your turn!")
+                print(f"{winners[current_player].name}, it's your turn!")
                 print(question.question)
                 for i, j in enumerate(question.options):
                     print(f"{i + 1}. {j}")
@@ -104,11 +131,11 @@ class Game:
                     try:
                         answer = int(input("Your answer (1-4): "))
                         if answer > 0 and answer < 5:
-                          break 
-                        else: 
-                           raise ValueError ("Invalid input. Please enter a number between 1 and 4.")
+                            break
+                        else:
+                            raise ValueError("Invalid input. Please enter a number between 1 and 4.")
                     except ValueError:
-                         print("Invalid input. Please enter a *number* between 1 and 4.")
+                        print("Invalid input. Please enter a *number* between 1 and 4.")
                 if answer == question.answer:
                     print("Correct!")
                     winners[current_player].score += 1
@@ -118,13 +145,20 @@ class Game:
                     new = False
                 print(f"The correct answer was: {question.options[question.answer - 1]}")
                 current_player = (current_player + 1) % len(winners)
-            max_score = max(p.score for p in winners)
-            winners = [p for p in winners if p.score == max_score]
-            if len(winners) == 1:
+                
+            
+
+            winners = [p for p in winners if p.score == 1]
+            if not winners:
+                print("Ninguém acertou! O jogo terminou sem vencedor.")
+                return
+            elif len(winners) == 1:
                 print(f"The winner is {winners[0].name}!")
                 break           
             else:
                 print(f"The winners are {', '.join(p.name for p in winners)}! Starting tie-breaker round...")
+                for i in winners:
+                   i.score = 0
         print ("Game over!", "We dont have an alone winner!")
 
 def read_json(file):
@@ -143,7 +177,9 @@ def read_json(file):
         question = i['question']
         answer = i['answer']
         options = i['options']
-        questions.append(Question(question, answer, options))
+        difficulty = i['difficulty']
+        category = i['category']    
+        questions.append(Question(question, answer, options, difficulty, category))
     
     return questions
 
