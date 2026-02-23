@@ -1,5 +1,9 @@
 # no futuro permitir mudanca de nivel durante o jogo 
 # no futuro aumentar nivel de perguntas 
+# no tie nreak ainda nao ta bom 
+# no futuro permitir escolha de categorias
+# fazer funcao ask play
+
 
 import json
 import random
@@ -69,7 +73,22 @@ class Game:
 
         for i in range(rounds):
             if new:
-                question = random.choice(self.flow_questions)
+                categories = sorted(set(q.category for q in self.flow_questions))
+                print("Available categories:")
+                for j, category in enumerate(categories):
+                    print(f"{j + 1}. {category}")   
+                while True:
+                    try:
+                        category_choice = int(input("Choose a category by entering its number: "))
+                        if 1 <= category_choice <= len(categories):
+                            chosen_category = categories[category_choice - 1]
+                            break
+                        else:
+                            raise ValueError("Invalid input. Please enter a valid category number.")
+                    except ValueError:
+                        print("Invalid input. Please enter a valid category number.")
+
+                question = random.choice([q for q in self.flow_questions if q.category == chosen_category])
                 self.flow_questions.remove(question)
             print(f"{self.players[current_player].name}, it's your turn!")
             print(question.question)
@@ -121,7 +140,22 @@ class Game:
             new = True
             for p in range(len(winners)):
                 if new:
-                    question = random.choice(self.flow_questions)
+                    categories = sorted(set(q.category for q in self.flow_questions))
+                    print("Available categories:")
+                    for j, category in enumerate(categories):
+                        print(f"{j + 1}. {category}")   
+                    while True:
+                        try:
+                            category_choice = int(input("Choose a category by entering its number: "))
+                            if 1 <= category_choice <= len(categories):
+                                chosen_category = categories[category_choice - 1]
+                                break
+                            else:
+                                raise ValueError("Invalid input. Please enter a valid category number.")
+                        except ValueError:
+                            print("Invalid input. Please enter a valid category number.")
+
+                    question = random.choice([q for q in self.flow_questions if q.category == chosen_category])
                     self.flow_questions.remove(question)
                 print(f"{winners[current_player].name}, it's your turn!")
                 print(question.question)
