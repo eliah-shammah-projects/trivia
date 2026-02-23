@@ -135,6 +135,9 @@ class Game:
             i.score = 0
         for i in range(3):
             self.flow_questions = perguntas_filtradas.copy()
+            if len(self.flow_questions) < len(winners):
+                print("There are not enough questions for the tie-breaker round. The game will end without a clear winner.")
+                return
             first_player = random.randrange(len(winners))
             current_player = first_player
             new = True
@@ -170,6 +173,7 @@ class Game:
                             raise ValueError("Invalid input. Please enter a number between 1 and 4.")
                     except ValueError:
                         print("Invalid input. Please enter a *number* between 1 and 4.")
+               
                 if answer == question.answer:
                     print("Correct!")
                     winners[current_player].score += 1
