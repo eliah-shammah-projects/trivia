@@ -1,7 +1,4 @@
 # no futuro permitir mudanca de nivel durante o jogo 
-# no futuro aumentar nivel de perguntas 
-# no tie nreak ainda nao ta bom 
-# no futuro permitir escolha de categorias
 # fazer funcao ask play
 
 
