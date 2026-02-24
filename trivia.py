@@ -1,9 +1,8 @@
 #TODO:
-# There are still some things in Portuguese that need to be fixed
 # In the future, allow changing the difficulty level during the game
 # Add an option for how long the game will last
-# Add a maximum time to answer
-# Limit questions  
+# Add a maximum time to answer 
+# Limit num of questions  
 
 
 import json
