@@ -1,7 +1,10 @@
-# no futuro permitir mudanca de nivel durante o jogo 
-# importante, a pergunta soh pode repetir passar para p o proximo apnas uma vez e nao mais 
-# tem coisas como o cardapio em potugues ainda
-# colocar opcao de qto vai durar o jogo 
+#TODO:
+# There are still some things in Portuguese that need to be fixed
+# In the future, allow changing the difficulty level during the game
+# Add an option for how long the game will last
+# Add a maximum time to answer
+# Limit questions  
+
 
 import json
 import random
@@ -32,22 +35,29 @@ class Player:
 
 class Game:
     def ask_category_and_question(self, flow_questions):
-        categories = sorted(set(q.category for q in flow_questions))
-        print("Available categories:")
-        for j, category in enumerate(categories):
-            print(f"{j + 1}. {category}")
+        categories = sorted(set(q.category for q in flow_questions if any(q2.category == q.category for q2 in flow_questions)))
         while True:
+            print("Available categories:")
+            for j, category in enumerate(categories):
+                print(f"{j + 1}. {category}")
             try:
                 category_choice = int(input("Choose a category by entering its number: "))
                 if 1 <= category_choice <= len(categories):
                     chosen_category = categories[category_choice - 1]
-                    break
+                    questions_in_category = [q for q in flow_questions if q.category == chosen_category]
+                    if questions_in_category:
+                        question = random.choice(questions_in_category)
+                        return question
+                    else:
+                        print("No more questions in this category. Please choose another category.")
+                        categories.pop(category_choice - 1)
+                        if not categories:
+                            print("No more categories with questions available.")
+                            return None
                 else:
                     raise ValueError("Invalid input. Please enter a valid category number.")
             except ValueError:
                 print("Invalid input. Please enter a valid category number.")
-        question = random.choice([q for q in flow_questions if q.category == chosen_category])
-        return question
 
     def __init__(self, questions, players):
         self.questions = questions
@@ -57,23 +67,23 @@ class Game:
 
         print("Chose the difficulty level:")
         print("1. 1\n2. 2\n3. 3\n4. 2-\n5. 2+\n6. All")
-        opcoes = {"1": 1, "2": 2, "3": 3, "4": "2-", "5": "2+", "6": "all"}
+        options = {"1": 1, "2": 2, "3": 3, "4": "2-", "5": "2+", "6": "all"}
         while True:
-            escolha = input("Enter the number of the desired difficulty: ").strip()
-            if escolha in opcoes:
-                nivel = opcoes[escolha]
-                if nivel == "all":
-                    perguntas_filtradas = self.questions.copy()
-                elif nivel == "2-":
-                    perguntas_filtradas = [q for q in self.questions if q.difficulty == 1 or q.difficulty == 2]
-                elif nivel == "2+":
-                    perguntas_filtradas = [q for q in self.questions if q.difficulty == 2 or q.difficulty == 3]
+            choice = input("Enter the number of the desired difficulty: ").strip()
+            if choice in options:
+                level = options[choice]
+                if level == "all":
+                    filtered_questions = self.questions.copy()
+                elif level == "2-":
+                    filtered_questions = [q for q in self.questions if q.difficulty == 1 or q.difficulty == 2]
+                elif level == "2+":
+                    filtered_questions = [q for q in self.questions if q.difficulty == 2 or q.difficulty == 3]
                 else:
-                    perguntas_filtradas = [q for q in self.questions if q.difficulty == nivel]
-                if not perguntas_filtradas:
+                    filtered_questions = [q for q in self.questions if q.difficulty == level]
+                if not filtered_questions:
                     print("No questions available for this difficulty level.")
                     continue
-                if len(perguntas_filtradas) < len(self.players):
+                if len(filtered_questions) < len(self.players):
                     print("Not enough questions for the number of players. Choose another difficulty.")
                     continue
                 break
@@ -85,13 +95,15 @@ class Game:
         first_player = random.randrange(len(self.players))
         current_player = first_player
         new = True
-        rounds = (len(perguntas_filtradas) // len(self.players)) * len(self.players)
-        self.flow_questions = perguntas_filtradas.copy()
+        attemps = 0
+        rounds = (len(filtered_questions) // len(self.players)) * len(self.players)
+        self.flow_questions = filtered_questions.copy()
 
         for i in range(rounds):
-            if new:
+            if new or attemps >= 2:
                 question = self.ask_category_and_question(self.flow_questions)
                 self.flow_questions.remove(question)
+                attemps = 0
 
 
             print(f"{self.players[current_player].name}, it's your turn!")
@@ -117,6 +129,7 @@ class Game:
             else:
                 print("Wrong!")
                 new = False
+                attemps += 1
             print(f"The correct answer was: {question.options[question.answer - 1]}")
             current_player = (current_player + 1) % len(self.players)
 
@@ -132,24 +145,26 @@ class Game:
             print(f"The winners are {', '.join(winners)}!")
             print("Starting tie-breaker round...")
             winners = [p for p in self.players if p.name in winners]
-            self.tie_breaker(winners, perguntas_filtradas)
+            self.tie_breaker(winners, filtered_questions)
 
 
-    def tie_breaker(self, winners, perguntas_filtradas):
+    def tie_breaker(self, winners, filtered_questions):
         for i in winners:
             i.score = 0
         for i in range(3):
-            self.flow_questions = perguntas_filtradas.copy()
+            self.flow_questions = filtered_questions.copy()
             if len(self.flow_questions) < len(winners):
                 print("There are not enough questions for the tie-breaker round. The game will end without a clear winner.")
                 return
             first_player = random.randrange(len(winners))
             current_player = first_player
             new = True
+            attemps = 0
             for p in range(len(winners)):
-                if new:
+                if new or attemps >= 2:
                     question = self.ask_category_and_question(self.flow_questions)
                     self.flow_questions.remove(question)
+                    attemps = 0
                 print(f"{winners[current_player].name}, it's your turn!")
                 print(question.question)
                 for i, j in enumerate(question.options):
@@ -171,6 +186,7 @@ class Game:
                 else:
                     print("Wrong!")
                     new = False
+                    attemps += 1    
                 print(f"The correct answer was: {question.options[question.answer - 1]}")
                 current_player = (current_player + 1) % len(winners)
                 

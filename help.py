@@ -2,6 +2,9 @@
 # importante, a pergunta soh pode repetir passar para p o proximo apnas uma vez e nao mais 
 # tem coisas como o cardapio em potugues ainda
 # colocar opcao de qto vai durar o jogo 
+# colocar tempo maximo p resopnder 
+# limitar perguntas  
+
 
 import json
 import random
@@ -85,13 +88,17 @@ class Game:
         first_player = random.randrange(len(self.players))
         current_player = first_player
         new = True
+        attemps = 0
         rounds = (len(perguntas_filtradas) // len(self.players)) * len(self.players)
         self.flow_questions = perguntas_filtradas.copy()
 
         for i in range(rounds):
-            if new:
+            if new or attemps >= 2:
                 question = self.ask_category_and_question(self.flow_questions)
                 self.flow_questions.remove(question)
+                attemps = 0
+                new = True
+
 
 
             print(f"{self.players[current_player].name}, it's your turn!")
@@ -117,6 +124,7 @@ class Game:
             else:
                 print("Wrong!")
                 new = False
+                attemps += 1
             print(f"The correct answer was: {question.options[question.answer - 1]}")
             current_player = (current_player + 1) % len(self.players)
 
@@ -146,8 +154,9 @@ class Game:
             first_player = random.randrange(len(winners))
             current_player = first_player
             new = True
+            attemps = 0
             for p in range(len(winners)):
-                if new:
+                if new or attemps:
                     question = self.ask_category_and_question(self.flow_questions)
                     self.flow_questions.remove(question)
                 print(f"{winners[current_player].name}, it's your turn!")
@@ -168,6 +177,8 @@ class Game:
                     print("Correct!")
                     winners[current_player].score += 1
                     new = True
+                    attemps = 0
+                            
                 else:
                     print("Wrong!")
                     new = False
@@ -241,4 +252,6 @@ def main():
 
 
 if __name__ == "__main__":    main()
+
+
 
