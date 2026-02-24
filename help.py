@@ -1,7 +1,6 @@
 # no futuro permitir mudanca de nivel durante o jogo 
-# fazer funcao ask play
-# importante, a eprgunta soh pode repetir passar para p o proximo apnas uma vez e nao mais 
-#tem coisas como o cardapio em potugues ainda
+# importante, a pergunta soh pode repetir passar para p o proximo apnas uma vez e nao mais 
+# tem coisas como o cardapio em potugues ainda
 # colocar opcao de qto vai durar o jogo 
 
 import json
