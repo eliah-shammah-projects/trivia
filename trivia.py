@@ -3,7 +3,7 @@
 # Add an option for how long the game will last
 # Add a maximum time to answer 
 # Limit num of questions  
-
+# mostra pountuacao a cada rodada 
 
 import json
 import random
